@@ -41,7 +41,7 @@ class straightfits(object):
             plt.semilogy(d.x,d.y,'ro')
             plt.semilogy(xlin,self.A[-1]*np.exp(self.B[-1]*xlin))
         return self.A[-1],self.B[-1]
-    def del_last_segment(self):
+    def delete_last_segment(self):
         '''Delete tha last saved straight segment'''
         self.A=self.A[:-1]
         self.B=self.B[:-1]
