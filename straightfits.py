@@ -19,6 +19,16 @@ class straightfits(object):
         self.y=np.asarray(y)
         if self.x.shape[0]>0:
             self.corners=np.append(self.corners,self.x[0])
+    def __getitem__(self, key):
+        if key=='x':
+            return self.x
+        elif key=='y': 
+            return self.y
+        elif key=='corners':
+            return self.corners
+        else:
+            sys.exit('Not key: %s',%key)
+            
     def add_segment(self,xmin,xmax,ShowPlot=True,verbose=False):
         '''Add one straight segment to the logarhitmic fit
            between xmin and xmax,
