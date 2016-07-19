@@ -27,7 +27,7 @@ class straightfits(object):
         elif key=='corners':
             return self.corners
         else:
-            sys.exit('Not key: %s',%key)
+            sys.exit('Not key: %s' %key)
             
     def add_segment(self,xmin,xmax,ShowPlot=True,verbose=False):
         '''Add one straight segment to the logarhitmic fit
