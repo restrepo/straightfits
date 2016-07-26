@@ -11,9 +11,9 @@ class straightfits(object):
        For fitting $y = Ae^{Bx}$, take the logarithm of both side gives $\log y = \log A + Bx$. 
        So just fit $\log y$ against $x$.
     '''
-    A=np.array(0)
+    A=np.array(0) #replace by order 1 
     B=np.array(0)
-    corners=np.array([])
+    corners=np.array([]) #replace by number of poly1d
     def __init__(self,x=[],y=[]):
         self.x=np.asarray(x)
         self.y=np.asarray(y)
