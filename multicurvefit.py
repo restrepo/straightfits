@@ -54,7 +54,7 @@ class multicurvefit(curvefit):
         A,B,corners
         where: $y = Ae^{Bx}$
         '''
-        self.polys.to_json('lux2016.json')
+        self.polys.to_json('jsonfile')
                 
     def read_json(self,jsonfile):
         '''
