@@ -62,9 +62,11 @@ class multicurvefit(curvefit):
         A,B,corners
         where: $y = Ae^{Bx}$
         '''
-        self.polys=pd.read_json(jsonfile)
+        self.polys=pd.read_json(jsonfile).reset_index(drop=True)
         for i in range(self.polys.shape[0]):
             self.polys['coeffs'][i]=np.asarray(self.polys.ix[i].coeffs)
+            
+        self.polys=self.polys.reset_index(drop=True)
         
     def __call__(self,x):
         '''
