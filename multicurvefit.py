@@ -62,9 +62,10 @@ class multicurvefit(curvefit):
         A,B,corners
         where: $y = Ae^{Bx}$
         '''
-        self.polys=pd.read_json(jsonfile).reset_index(drop=True)
+        #http://stackoverflow.com/questions/20603925/label-based-indexing-pandas-loc
+        self.polys=pd.read_json(jsonfile,dtype=object)
         for i in range(self.polys.shape[0]):
-            self.polys['coeffs'][i]=np.asarray(self.polys.ix[i].coeffs)
+            self.polys.loc[i,'coeffs']=np.asarray(self.polys.ix[i].coeffs)
             
         self.polys=self.polys.reset_index(drop=True)
         
