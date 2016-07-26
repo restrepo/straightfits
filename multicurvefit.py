@@ -68,7 +68,7 @@ class multicurvefit(curvefit):
             
         self.polys=self.polys.reset_index(drop=True)
         
-    def __call__(self,x):
+    def __call__(self,x,verbose=True):
         '''
         Given an array A and another array B defined by the
         values of x in corners, obtain the several values
@@ -93,7 +93,8 @@ class multicurvefit(curvefit):
                 coeffs=self.polys[np.logical_and(self.polys.xmin<=xx,self.polys.xmax>xx)]        
 
             if wrng:
-                print('WARNING: Out of fitted range:',xx)
+                if verbose:
+                    print('WARNING: Out of fitted range:',xx)
 
 
             coeffs=coeffs.coeffs.reset_index(drop=True)[0]
