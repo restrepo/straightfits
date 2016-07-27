@@ -4,13 +4,8 @@ import matplotlib.pyplot as plt
 import sys
 from curvefit import *
 class multicurvefit(curvefit):
-    '''The curve in a loglog plane can be decomposed in approximately straight lines. 
-       In the $(\log x,\log y)$-plane one straight line is described by $y = Ae^{Bx}$ for some $A$ and $B$.
-
-       From: http://stackoverflow.com/a/3433503/2268280:
-
-       For fitting $y = Ae^{Bx}$, take the logarithm of both side gives $\log y = \log A + Bx$. 
-       So just fit $\log y$ against $x$.
+    '''The curve in a loglog plane can be decomposed in several picewise . 
+       
     '''
     polys=pd.DataFrame()
     def __init__(self,x=[],y=[]):# *args, **kwargs):
@@ -50,17 +45,17 @@ class multicurvefit(curvefit):
     
     def to_json(self,jsonfile):
         '''
-        Save the fit data to a csv file with colums:
-        A,B,corners
-        where: $y = Ae^{Bx}$
+        Save the fit data to a json file with colums:
+        coeffs,xmin,xmax
+        where coeffs are used to build the poly1d objects
         '''
-        self.polys.to_json('jsonfile')
+        self.polys.to_json(jsonfile)
                 
     def read_json(self,jsonfile):
         '''
-        Recover fitted data from a csv file with colums:
-        A,B,corners
-        where: $y = Ae^{Bx}$
+        Recover fitted data from a  json file with colums:
+        coeffs,xmin,xmax
+        where coeffs are used to build the poly1d objects
         '''
         #http://stackoverflow.com/questions/20603925/label-based-indexing-pandas-loc
         self.polys=pd.read_json(jsonfile,dtype=object)
@@ -71,10 +66,8 @@ class multicurvefit(curvefit):
         
     def __call__(self,x,verbose=True):
         '''
-        Given an array A and another array B defined by the
-        values of x in corners, obtain the several values
-        of $y = Ae^{Bx}$ for any x.
-        x can be a float or an array of floats
+        Given a set of coefficients for  xmin<=x<xmax,
+        built the proper poly1d an evalute it in that point
         '''
         xa=np.asarray(x)
         
