@@ -1,3 +1,4 @@
+import warnings
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -69,36 +70,57 @@ class multicurvefit(curvefit):
         Given a set of coefficients for  xmin<=x<xmax,
         built the proper poly1d an evalute it in that point
         '''
-        xa=np.asarray(x)
+        x=np.asarray(x)
+        fout=np.array([])
+
+        if not x.shape:
+            x=np.asarray([x])
         
-        limit=np.array([])
-        if not np.asarray(x).shape:
-            xa=np.asarray([x])
-        for xx in xa:
+        ordered=True
+        n=self.polys.shape[0]
+        if np.unique(x==np.sort(x)).tolist()==[True]:
+            self.polys['p']=[np.poly1d(self.polys.coeffs[i]) for i in range(self.polys.shape[0])]
+            if n>1: #if n==1 -> ramge: (-oo,+oo)
+                xx=x[x<self.polys.xmax[0]]
+                fout=np.append(fout,( 10**( self.polys.p[0]( np.log10(xx) ) ) ) )
+                if n>2: 
+                    for i in range(n-2):
+                        xx=x[np.logical_and(x>=self.polys.xmax[i], x<self.polys.xmax[i+1] )]
+                        fout=np.append(fout, 10**( self.polys.p[i+1]( np.log10(xx) ) ) )
+     
+                xx=x[x>=self.polys.xmax[n-2]]
+                fout=np.append(fout, 10**( self.polys.p[n-1]( np.log10(xx) ) ) )
+        else:
+            warnings.warn('Input array no ordered. Going into slow mode ')
+            ordered=False
+     
+        if n==1:
+            fout=np.append(fout, 10**( np.poly1d(self.polys.coeffs[0])( np.log10(x) ) ) )        
+        if not ordered:
+            for xx in x:
+     
+                wrng=False
+                if xx<self.polys.xmin.min():
+                    wrng=True
+                    coeffs=self.polys[:1]
+                elif xx>=self.polys.xmax.max(): 
+                    wrng=True
+                    coeffs=self.polys[-1:]
+                else:
+                    coeffs=self.polys[np.logical_and(self.polys.xmin<=xx,self.polys.xmax>xx)]        
+     
+                if wrng:
+                    if verbose:
+                        warnings.warn('WARNING: Out of fitted range: %g' %xx)
+     
+     
+                coeffs=coeffs.coeffs.reset_index(drop=True)[0]
+                if len(coeffs)>0:
+                    p=np.poly1d(coeffs)
+                    fout=np.append( fout,10.**( p( np.log10(xx) ) ) )
+                else:
+                    sys.exit('ERROR: Out of range')
 
-            wrng=False
-            if xx<self.polys.xmin.min():
-                wrng=True
-                coeffs=self.polys[:1]
-            elif xx>=self.polys.xmax.max(): 
-                wrng=True
-                coeffs=self.polys[-1:]
-            else:
-                coeffs=self.polys[np.logical_and(self.polys.xmin<=xx,self.polys.xmax>xx)]        
-
-            if wrng:
-                if verbose:
-                    print('WARNING: Out of fitted range:',xx)
-
-
-            coeffs=coeffs.coeffs.reset_index(drop=True)[0]
-            if len(coeffs)>0:
-                p=np.poly1d(coeffs)
-                limit=np.append( limit,10.**( p( np.log10(xx) ) ) )
-            else:
-                sys.exit('ERROR: Out of range')
-
-        if limit.shape[0]==1:
-            limit=limit[0]
-        return limit
-            
+        if fout.shape[0]==1:
+            fout=fout[0]
+        return fout
